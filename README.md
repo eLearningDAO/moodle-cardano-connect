@@ -1,18 +1,25 @@
 # moodle-cardano-connect
+
 It is a small but useful tool that allows students to login into [Moodle](https://moodle.org) Learning Management System via a Cardano wallet (such as Nami, Eternl, Flint, etc).
 
 Users do not need to access Moodle with credentials, because they are authenticated through the browser wallet plugin.
 
 ### About the authentication process
+
 The user wallet address is encrypted and used as the user's unique ID in Moodle. This data can be shared safely because it prevents revealing the cardano user behind the moodle learner.
 
 For example, an address like this addr1x8dgthgc5tgk9v70jzaesgsexs92yhqfq39gy5vnzyuvssw6shw33gk3v2euly9mnq3pjdq25fwqjpz2sfgexyfcepqsn3r7pu generates the moodle user ID like this 4dece4f7431e625b36ce27a4a09727a2 (collisions are extremely rare and isolated per moodle server instance).
 
-### Thanks to 
-https://github.com/txpipe/wallet-connect-starter-kit for the fundamental work on the Cardano wallet connection.
+### Thanks to
 
+<https://github.com/txpipe/wallet-connect-starter-kit> for the fundamental work on the Cardano wallet connection.
+
+# Config instruction
+
+Edit `./src/App.tsx` and set the IP of the target moodle server `var MOODLEURL = 'http://x.x.x.x/'`
 
 # Building info
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
@@ -35,7 +42,4 @@ It correctly bundles React in production mode and optimizes the build for the be
 The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-# Config instruction
-Edit `./src/App.tsx` and set the IP of the target moodle server `var MOODLEURL = 'http://x.x.x.x/'`
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information
