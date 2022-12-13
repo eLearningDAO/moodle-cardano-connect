@@ -68,10 +68,8 @@ function App() {
 
     var accaddr = md5(changeAddress)
 
-    // var MOODLEURL = 'http://x.x.x.x/' // @CONFIG You can set your Moodle URL here.
-    // var MOODLEAPITOKEN = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' // @CONFIG You can set Moodle Webservice Token here.
-    var MOODLEURL = 'http://54.216.2.101/'
-    var MOODLEAPITOKEN = '37099649631154fa7c026f722b43190b'
+    var MOODLEURL = 'http://x.x.x.x/' // @CONFIG You can set your Moodle URL here.
+    var MOODLEAPITOKEN = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' // @CONFIG You can set Moodle Webservice Token here.
     var url = MOODLEURL + '/webservice/rest/server.php?wstoken=' + MOODLEAPITOKEN + '&wsfunction=auth_userkey_request_login_url&moodlewsrestformat=json';
 
     const postdata = new FormData();
