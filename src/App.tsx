@@ -66,18 +66,15 @@ function App() {
     const changeAddress = Address.from_bytes(Buffer.from(raw, "hex")).to_bech32()
     console.log(changeAddress)
 
-    var accaddr = md5(changeAddress)
+    var accaddrHash = md5(changeAddress)
 
     var MOODLEURL = 'http://x.x.x.x/' // @CONFIG You can set your Moodle URL here.
     var MOODLEAPITOKEN = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' // @CONFIG You can set Moodle Webservice Token here.
     var url = MOODLEURL + '/webservice/rest/server.php?wstoken=' + MOODLEAPITOKEN + '&wsfunction=auth_userkey_request_login_url&moodlewsrestformat=json';
 
     const postdata = new FormData();
-    postdata.append('user[firstname]', "anonymous");
-    postdata.append('user[lastname]', accaddr.toLowerCase());
-    postdata.append('user[email]', (accaddr+"@pocre.io").toLowerCase());
-    postdata.append('user[username]', accaddr.toLowerCase());
-    postdata.append('user[idnumber]', accaddr.toLowerCase());
+    postdata.append('user[username]', accaddrHash.toLowerCase());
+    postdata.append('user[idnumber]', changeAddress.toLowerCase());
 
     fetch(url, {
       method: 'POST',
