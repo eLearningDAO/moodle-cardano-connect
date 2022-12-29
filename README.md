@@ -16,9 +16,11 @@ Users do not need to access Moodle with credentials, because they are authentica
 
 # Config instruction
 
-1. You have to install the plugin from https://moodle.org/plugins/auth_userkey in to your Moodle Deployment and enable it according to the documentations.
-2. In the plugin settings, set the `Mapping field` to `ID number` and `Create user?` to `Yes`.
-3. Edit `./src/App.tsx` and set the IP/Host of the target moodle server `var MOODLEURL = 'http://x.x.x.x/'` and also update the Moodle Webservice Token `var MOODLEAPITOKEN = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'`. For easy finding, you can search `@CONFIG` in `./src/App.tsx`.
+1. You have to install the plugin https://github.com/eLearningDAO/moodle-auth_userkey-plus (that is a modification of  https://moodle.org/plugins/auth_userkey) in your Moodle Deployment and enable it according to the documentations
+2. In the plugin settings, set the `Mapping field` to `ID number` and `Create user?` to `Yes`
+3. Edit `./src/App.tsx` and set the IP/Host of the target moodle server `var MOODLEURL = 'http://x.x.x.x/'` and also update the Moodle Webservice Token `var MOODLEAPITOKEN = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'`. For easy finding, you can search `@CONFIG` in `./src/App.tsx`
+4. On Moodle as admin, open the course you want to allow for direct access (via Cardano wallet), click participants, select enrolment methods and enable self-enrolment
+
 
 # Building info
 
