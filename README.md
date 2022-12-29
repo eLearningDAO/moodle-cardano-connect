@@ -4,15 +4,15 @@ It is a small but useful tool that allows students to login into [Moodle](https:
 
 Users do not need to access Moodle with credentials, because they are authenticated through the browser wallet plugin.
 
-### About the authentication process
+### Demo video
 
-The user wallet address is encrypted and used as the user's unique ID in Moodle. This data can be shared safely because it prevents revealing the cardano user behind the moodle learner.
+<a href="https://www.youtube.com/embed/rFLyY40FtCE" target="_blank">
+ <img src="http://img.youtube.com/vi/rFLyY40FtCE/0.jpg" alt="Watch the video"  border="10" />
+</a>
 
-For example, an address like this addr1x8dgthgc5tgk9v70jzaesgsexs92yhqfq39gy5vnzyuvssw6shw33gk3v2euly9mnq3pjdq25fwqjpz2sfgexyfcepqsn3r7pu generates the moodle user ID like this 4dece4f7431e625b36ce27a4a09727a2 (collisions are extremely rare and isolated per moodle server instance).
-
-### Thanks to
-
-<https://github.com/txpipe/wallet-connect-starter-kit> for the fundamental work on the Cardano wallet connection.
+<a href="https://www.youtube.com/embed/Z69M08dbolg" target="_blank">
+ <img src="http://img.youtube.com/vi/Z69M08dbolg/0.jpg" alt="Watch the video"  border="10" />
+</a>
 
 # Config instruction
 
@@ -45,3 +45,14 @@ The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information
+
+## About the authentication process
+
+The user wallet address is encrypted and used as the user's unique ID in Moodle. This data can be shared safely because it prevents revealing the cardano user behind the moodle learner.
+
+For example, an address like this addr1x8dgthgc5tgk9v70jzaesgsexs92yhqfq39gy5vnzyuvssw6shw33gk3v2euly9mnq3pjdq25fwqjpz2sfgexyfcepqsn3r7pu generates the moodle user ID like this 4dece4f7431e625b36ce27a4a09727a2 (collisions are extremely rare and isolated per moodle server instance).
+
+### Thanks to
+
+<https://github.com/txpipe/wallet-connect-starter-kit> for the fundamental work on the Cardano wallet connection.
+
