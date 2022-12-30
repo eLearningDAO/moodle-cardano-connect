@@ -68,8 +68,8 @@ function App() {
 
     var accaddrHash = md5(changeAddress)
 
-    var MOODLEURL = 'http://x.x.x.x/' // @CONFIG You can set your Moodle URL here.
-    var MOODLEAPITOKEN = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' // @CONFIG You can set Moodle Webservice Token here.
+    var MOODLEURL = process.env.REACT_APP_MOODLEURL
+    var MOODLEAPITOKEN = process.env.REACT_APP_MOODLEAPITOKEN
     var url = MOODLEURL + '/webservice/rest/server.php?wstoken=' + MOODLEAPITOKEN + '&wsfunction=auth_userkey_request_login_url&moodlewsrestformat=json';
 
     const postdata = new FormData();
