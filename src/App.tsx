@@ -3,10 +3,10 @@ import { useCallback, useEffect, useState } from 'react';
 import './App.css';
 import { WalletInfo, WALLET_IDS } from './wallets/base';
 import { enable, getAvailableWallets, getBalance, getChangeAddress, getNetwork, getRewardAddresses, getUnusedAddresses, getUsedAddresses } from './walletsGateway';
+
 var md5 = require('md5');
 
 let Buffer = require('buffer/').Buffer
-
 
 function WalletCard(props: { wallet: WalletInfo, handleClick: Function }) {
   return (
@@ -84,11 +84,59 @@ function App() {
     .then((data) => {
       console.log(data)
       if(data['errorcode'])
-        // alert(data['message'])
-       setMessage(data['message'])
+        setMessage(data['message'])
       else {
-        // alert(data['loginurl']) // This is the loginurl which can be used to access the Moodle without entring any further details.
-        setMessage(data['loginurl'])
+        setMessage(data['loginurl']) // This is the loginurl which can be used to access the Moodle without entring any further details.
+      }
+    });
+  };
+
+  const postToCardano = async function(hashes:any) {
+    var hashIds = [];
+    var CardanoHash = "test"; // This variable will be used to record/pass transaction Hast to Trax LRS.
+
+    for (let k in hashes) {
+      const hashData = hashes[k];
+      hashIds.push(hashData.id)
+    }
+
+    // Here we can send this data to Cardano and get the transaction Hash to post to Trax LRS back.
+
+    var TRAXLRSURL = process.env.REACT_APP_TRAXLRSURL
+    const postdata = new FormData();
+    postdata.append('hash_ids', JSON.stringify(hashIds));
+    postdata.append('cardano_hash', CardanoHash);
+
+    return fetch(TRAXLRSURL + 'api/save-status', {
+      method: 'POST',
+      body: postdata
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data)
+      setMessage(data['message'])
+    });
+  }
+
+  const processPendingStatements = async function (addr:any) {
+
+    const raw = await getChangeAddress();
+    // console.log(Buffer.from(raw, "hex"))
+    // const changeAddress = Address.from_bytes(Buffer.from(raw, "hex")).to_bech32()
+    // console.log(changeAddress)
+
+    var changeAddress = "dummy"
+    var TRAXLRSURL = process.env.REACT_APP_TRAXLRSURL
+
+    fetch(TRAXLRSURL + 'api/get-pending-data?walletaddress=' + changeAddress, {method: 'GET'})
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data)
+      if(data['errorcode']){
+        setMessage(data['message'])
+      }
+      else {
+        postToCardano(data['hashes'])
       }
     });
   };
@@ -130,6 +178,8 @@ function App() {
                   </div>
                 <div className="flex justify-between items-center">
                     <button className="mt-2 rounded-lg border border-blue-500 bg-blue-600 bg-opacity-10 p-4 text-[#194866] mb-4" onClick={()=>{getMoodleLink(address)}}>Get Moodle Login</button>
+                    
+                    <button className="mt-2 rounded-lg border border-blue-500 bg-blue-600 bg-opacity-10 p-4 text-[#194866] mb-4" onClick={()=>{processPendingStatements(address)}}>Post xAPI Statements to Cardano</button>
                     <div className='flex'>
                       <img src="/logo.svg" className="mr-4 h-6" alt="TxPipe Logo" />
                       <h2 className="text-m text-gray-400 font-normal">Starter Kit provided by TxPipe</h2>
