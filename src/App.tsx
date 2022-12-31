@@ -123,8 +123,9 @@ function App() {
     const raw = await getChangeAddress();
     const walletAddress = Address.from_bytes(Buffer.from(raw, "hex")).to_bech32()
     var TRAXLRSURL = process.env.REACT_APP_TRAXLRSURL
+    var TRAXLRSDATALIMIT = process.env.REACT_APP_TRAXLRS_DATA_LIMIT
 
-    fetch(TRAXLRSURL + 'api/get-pending-data?walletaddress=' + walletAddress, {method: 'GET'})
+    fetch(TRAXLRSURL + 'api/get-pending-data?walletaddress=' + walletAddress + '&limit=' + TRAXLRSDATALIMIT, {method: 'GET'})
     .then((response) => response.json())
     .then((data) => {
       console.log(data)
