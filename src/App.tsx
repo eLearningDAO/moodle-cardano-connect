@@ -113,10 +113,14 @@ function App() {
         priceStep: 0.0000721,
         coinsPerUtxoWord: "34482",
         lovelaceToSend: 3000000,
-        addressBech32SendADA: "addr_test1qrt7j04dtk4hfjq036r2nfewt59q8zpa69ax88utyr6es2ar72l7vd6evxct69wcje5cs25ze4qeshejy828h30zkydsu4yrmm",
+        addressBech32SendADA: process.env.REACT_APP_TX_RECEIVER?.toString(),
         changeAddress: walletAddress
     }
-    
+    if(params.addressBech32SendADA == undefined) {
+      alert("Reciever Address is not set.")
+      return;
+    }
+      
     const txBuilder = CardanoWasm.TransactionBuilder.new(
       TransactionBuilderConfigBuilder.new()
           .fee_algo(
@@ -159,7 +163,7 @@ function App() {
     
     for (let k in hashes) {
       const hashData = hashes[k];
-      txBuilder.add_metadatum(CardanoWasm.BigNum.from_str(hashData.id), CardanoWasm.TransactionMetadatum.new_text(hashData.hash))
+      txBuilder.add_metadatum(CardanoWasm.BigNum.from_str(hashData.id.toString()), CardanoWasm.TransactionMetadatum.new_text(hashData.hash))
       hashIds.push(hashData.id)
     }
 
