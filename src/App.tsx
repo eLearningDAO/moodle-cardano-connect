@@ -1,8 +1,9 @@
-import { Address, BaseAddress } from '@emurgo/cardano-serialization-lib-asmjs';
+import { Address, BaseAddress, BigNum, Ed25519KeyHashes, LinearFee, Transaction, TransactionBuilderConfigBuilder, TransactionWitnessSet } from '@emurgo/cardano-serialization-lib-asmjs';
 import { useCallback, useEffect, useState } from 'react';
 import './App.css';
 import { WalletInfo, WALLET_IDS } from './wallets/base';
-import { enable, getAvailableWallets, getBalance, getChangeAddress, getNetwork, getRewardAddresses, getUnusedAddresses, getUsedAddresses } from './walletsGateway';
+import { enable, getAvailableWallets, getBalance, getChangeAddress, getNetwork, getRewardAddresses, getUnusedAddresses, getUsedAddresses, getUtxos, signData, signTx, submitTx } from './walletsGateway';
+import * as CardanoWasm from '@emurgo/cardano-serialization-lib-asmjs'
 
 var md5 = require('md5');
 
@@ -93,19 +94,116 @@ function App() {
 
   const postToCardano = async function(hashes:any) {
     var hashIds = [];
-    var CardanoHash = "test"; // @TODO This variable will be used to record/pass transaction Hast to Trax LRS.
 
+    // instantiate the tx builder with the Cardano protocol parameters - these may change later on
+    const rawAddress = await getChangeAddress()
+    const walletAddress = Address.from_bytes(Buffer.from(rawAddress, "hex"))
+    
+    var params = {
+        linearFee: {
+            minFeeA: "44",
+            minFeeB: "255381",
+        },
+        minUtxo: "34482",
+        poolDeposit: "500000000",
+        keyDeposit: "2000000",
+        maxValSize: 5000,
+        maxTxSize: 16384,
+        priceMem: 0.0577,
+        priceStep: 0.0000721,
+        coinsPerUtxoWord: "34482",
+        lovelaceToSend: 3000000,
+        addressBech32SendADA: "addr_test1qrt7j04dtk4hfjq036r2nfewt59q8zpa69ax88utyr6es2ar72l7vd6evxct69wcje5cs25ze4qeshejy828h30zkydsu4yrmm",
+        changeAddress: walletAddress
+    }
+    
+    const txBuilder = CardanoWasm.TransactionBuilder.new(
+      TransactionBuilderConfigBuilder.new()
+          .fee_algo(
+              LinearFee.new(
+                  BigNum.from_str(params.linearFee.minFeeA), 
+                  BigNum.from_str(params.linearFee.minFeeB)
+              )
+          )
+          .pool_deposit(BigNum.from_str(params.poolDeposit))
+          .key_deposit(BigNum.from_str(params.keyDeposit))
+          .coins_per_utxo_word(BigNum.from_str(params.coinsPerUtxoWord))
+          .max_value_size(params.maxValSize)
+          .max_tx_size(params.maxTxSize)
+          .prefer_pure_change(true)
+          .build()
+    );
+
+    const shelleyOutputAddress = Address.from_bech32(params.addressBech32SendADA) // Reciever Address
+    const shelleyChangeAddress = params.changeAddress // Wallet Address
+    
+
+    let txOutputs = CardanoWasm.TransactionUnspentOutputs.new()
+    let utxos = await getUtxos();
+    for (const utxo of utxos) {
+        const tmputxo = CardanoWasm.TransactionUnspentOutput.from_bytes(Buffer.from(utxo, "hex"));
+        txOutputs.add(tmputxo)
+    }
+    
+    const txUnspentOutputs = txOutputs;
+    txBuilder.add_inputs_from(txUnspentOutputs, 1)
+
+    txBuilder.add_output(
+        CardanoWasm.TransactionOutput.new(
+            shelleyOutputAddress,
+            CardanoWasm.Value.new(BigNum.from_str(params.lovelaceToSend.toString()))
+        ),
+    );
+
+    txBuilder.add_change_if_needed(shelleyChangeAddress)
+    
     for (let k in hashes) {
       const hashData = hashes[k];
+      txBuilder.add_metadatum(CardanoWasm.BigNum.from_str(hashData.id), CardanoWasm.TransactionMetadatum.new_text(hashData.hash))
       hashIds.push(hashData.id)
     }
 
-    // @TODO Here we can send this data to Cardano and get the transaction Hash to post to Trax LRS back.
+    const txBody = txBuilder.build();
 
+    const transactionWitnessSet = TransactionWitnessSet.new();
+
+    const tx = Transaction.new(
+        txBody,
+        TransactionWitnessSet.from_bytes(transactionWitnessSet.to_bytes()),
+        txBuilder.get_auxiliary_data()
+    )
+
+    let txVkeyWitnesses = await signTx(
+        Buffer.from(
+            tx.to_bytes(), "utf8"
+        ).toString("hex"), 
+        false
+    );
+
+    txVkeyWitnesses = TransactionWitnessSet.from_bytes(
+        Buffer.from(txVkeyWitnesses, "hex")
+    );
+
+    transactionWitnessSet.set_vkeys(txVkeyWitnesses.vkeys());
+
+    const signedTx = Transaction.new(
+        tx.body(),
+        transactionWitnessSet,
+        tx.auxiliary_data()
+    );
+
+    const submittedTxHash = await submitTx(
+        Buffer.from(
+            signedTx.to_bytes(), "utf8"
+        ).toString("hex")
+    );
+    console.log(submittedTxHash)
+
+    // Posting status to Trax LRS
     var TRAXLRSURL = process.env.REACT_APP_TRAXLRSURL
     const postdata = new FormData();
     postdata.append('hash_ids', JSON.stringify(hashIds));
-    postdata.append('cardano_hash', CardanoHash);
+    postdata.append('cardano_hash', submittedTxHash);
 
     return fetch(TRAXLRSURL + 'api/save-status', {
       method: 'POST',

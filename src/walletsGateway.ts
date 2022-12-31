@@ -14,8 +14,8 @@ interface IConnectedWallet {
     getChangeAddress(): Promise<Address>,
     getUtxos(): Promise<any[]>,
     signData(address: Address, payload: string): Promise<any>,
-    signTx(): Promise<any>, // Not implemented
-    submitTx(): Promise<any> // Not implemented
+    signTx(tx:any, partial: Boolean): Promise<any>, // Not implemented
+    submitTx(tx:any): Promise<any> // Not implemented
     getCollateral(): Promise<any>, // Not implemented
 }
 
@@ -151,6 +151,28 @@ async function signData(address: Address, content: string) {
   return signedData;
 }
 
+/**
+ * Signs the transaction send in content by using the specified address
+ * Requires the wallet to be enabled
+ * @returns 
+ */
+async function signTx(tx: any, partial: Boolean) {
+  if (!CONNECTED_WALLET_API) throw new WalletNotEnabledError();
+  const txId = await CONNECTED_WALLET_API.signTx(tx, partial);
+  return txId;
+}
+
+/**
+ * Submit the transaction send in content by using the specified address
+ * Requires the wallet to be enabled
+ * @returns 
+ */
+async function submitTx(tx: any) {
+  if (!CONNECTED_WALLET_API) throw new WalletNotEnabledError();
+  const txId = await CONNECTED_WALLET_API.submitTx(tx);
+  return txId;
+}
+
 export {
     getAvailableWallets,
     enable,
@@ -161,5 +183,7 @@ export {
     getRewardAddresses,
     getChangeAddress,
     signData,
+    signTx,
+    submitTx,
     getUtxos,
 }
