@@ -99,7 +99,7 @@ function App() {
     const rawAddress = await getChangeAddress()
     const walletAddress = Address.from_bytes(Buffer.from(rawAddress, "hex"))
     
-    var params = {
+    var params = { // You may need to adjust these parameters.
         linearFee: {
             minFeeA: "44",
             minFeeB: "255381",
@@ -161,7 +161,7 @@ function App() {
 
     txBuilder.add_change_if_needed(shelleyChangeAddress)
     
-    for (let k in hashes) {
+    for (let k in hashes) { // Addint hashes to metadata.
       const hashData = hashes[k];
       txBuilder.add_metadatum(CardanoWasm.BigNum.from_str(hashData.id.toString()), CardanoWasm.TransactionMetadatum.new_text(hashData.hash))
       hashIds.push(hashData.id)

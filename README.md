@@ -18,7 +18,7 @@ For example, an address like this addr1x8dgthgc5tgk9v70jzaesgsexs92yhqfq39gy5vnz
 
 1. You have to install the plugin from https://moodle.org/plugins/auth_userkey in to your Moodle Deployment and enable it according to the documentations.
 2. In the plugin settings, set the `Mapping field` to `ID number` and `Create user?` to `Yes`.
-3. Edit `./src/App.tsx` and set the IP/Host of the target moodle server `var MOODLEURL = 'http://x.x.x.x/'` and also update the Moodle Webservice Token `var MOODLEAPITOKEN = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'`. For easy finding, you can search `@CONFIG` in `./src/App.tsx`.
+3. Copy to `sample.env` to `.env` and update the fields as mentioned in the file.
 
 # Building info
 
